@@ -3,9 +3,12 @@ version: "3"
 services:
   minio:
     image: minio/minio:RELEASE.2024-07-31T05-46-26Z
+    networks:
+      - internal
+    # network_mode: bridge
     ports:
       - "9000:9000"
-      - "9001:9001"
+    #  - "9001:9001"
     env_file:
       - "./config.env"
     volumes:
@@ -16,8 +19,21 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    mem_limit: 1024m
+    mem_reservation: 512m
+    cpus: 1
+    restart: unless-stopped
+
 
 ## By default this config uses default local driver,
 ## For custom volumes replace with volume driver configuration.
 volumes:
   data:
+
+networks:
+  internal:
+    external: true
